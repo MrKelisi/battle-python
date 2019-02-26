@@ -107,8 +107,8 @@ class BattleGameClient(BattleGameHandler):
 		if self.__connected_to_room == agent.agent_name:
 			others_member_names = []
 			in_battle = False
+			battle_members_names = battle_members_names.split(", ")[:-1]
 			for battle_member_name in battle_members_names:
-				battle_member_name = battle_member_name[:-2]
 				if self.name == battle_member_name:
 					in_battle = True
 				else:
@@ -129,6 +129,4 @@ class BattleGameClient(BattleGameHandler):
 
 	def ivy__game_par(self, agent, winners_names, _):
 		if self.__connected_to_room == agent.agent_name:
-			clean_winners_names = []
-			for winner_name in winners_names:
-				clean_winners_names.append(winner_name[:-2])
+			self.on_game_par(winners_names.split(", ")[:-1])
