@@ -62,7 +62,8 @@ class BattleGameServer(BattleGameHandler):
 	# Réception de messages. #
 
 	def ivy__find_rooms(self, agent):
-		self.room()
+		if not self.game_started:
+			self.room()
 
 	def ivy__room(self, agent, room_name):
 		pass  # Rien à gérer dans le cas d'un serveur, il gère sa salle sans se soucier des salles "voisines".
