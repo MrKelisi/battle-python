@@ -51,3 +51,14 @@ def compare_cards(cards):
 class Battle:
 	def __init__(self, players_number):
 		self.__decks = create_decks(players_number)
+
+	def draw(self):
+		cards = []
+
+		for deck in self.__decks:
+			cards.append(deck.draw())
+
+		return cards
+
+	def nb_cards(self, id_player):
+		return self.__decks[id_player].number_of_cards()

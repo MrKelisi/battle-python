@@ -5,10 +5,10 @@ class CardSuite(IntEnum):
 	"""
 	Familles de carte disponibles.
 	"""
-	SPADES = 0
-	HEARTS = 1
-	DIAMONDS = 2
-	CLUBS = 3
+	CLUBS = 0
+	DIAMONDS = 1
+	SPADES = 2
+	HEARTS = 3
 
 
 class CardRank(IntEnum):
