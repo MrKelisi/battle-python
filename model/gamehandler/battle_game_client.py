@@ -11,6 +11,7 @@ class BattleGameClient(BattleGameHandler):
 
 		self.on_new_room = default_callback  # gamehost_name, room_name
 		self.on_room_is_full = default_callback  # gamehost_name
+		self.on_another_game_begin = default_callback  # gamehost_name
 		self.on_room_connection_accepted = default_callback  #
 		self.on_room_connection_failed = default_callback  #
 
@@ -84,6 +85,8 @@ class BattleGameClient(BattleGameHandler):
 	def ivy__game_begin(self, agent):
 		if self.__connected_to_room == agent.agent_name:
 			self.on_game_begin()
+		else:
+			self.on_another_game_begin(agent.agent_name)
 
 	def ivy__game_new_turn(self, agent):
 		if self.__connected_to_room == agent.agent_name:

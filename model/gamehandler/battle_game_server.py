@@ -62,19 +62,23 @@ class BattleGameServer(BattleGameHandler):
 	# Réception de messages. #
 
 	def ivy__find_rooms(self, agent):
-		self.room()
+		if not self.game_started:
+			self.room()
 
 	def ivy__room(self, agent, room_name):
 		pass  # Rien à gérer dans le cas d'un serveur, il gère sa salle sans se soucier des salles "voisines".
 
 	def ivy__connect_room(self, agent, gamehost_name):
-		if self.name == gamehost_name and not self.game_started and len(self.players) <3 and agent not in self.players:
-			self.send_msg("accept_player: " + agent.agent_name + ".")
-			self.players.append(agent)
-			self.players_list()
-			self.on_new_player(agent.agent_name)
-		if len(self.players) >= 3:
-			self.send_msg("room_is_full.")
+		if self.name == gamehost_name and agent not in self.players:
+			if not self.game_started and len(self.players) <3:
+				self.send_msg("accept_player: " + agent.agent_name + ".")
+				self.players.append(agent)
+				self.players_list()
+				if len(self.players) == 3:
+					self.send_msg("room_is_full.")
+				self.on_new_player(agent.agent_name)
+			else:
+				self.send_msg("room_is_full.")
 
 	def ivy__room_is_full(self, agent):
 		pass  # Rien à gérer dans le cas d'un serveur, c'est lui qui indique si une salle est pleine ou non !
