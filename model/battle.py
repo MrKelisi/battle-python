@@ -50,15 +50,41 @@ def compare_cards(cards):
 
 class Battle:
 	def __init__(self, players_number):
+		self.__draw = []
 		self.__decks = create_decks(players_number)
+		self.__wins = [[] for _ in range(players_number)]
 
 	def draw(self):
-		cards = []
+		self.__draw = []
 
 		for deck in self.__decks:
-			cards.append(deck.draw())
+			self.__draw.append(deck.draw())
 
-		return cards
+		for c in self.__draw:
+			self.__wins[self.turn_winner()].append(c)
+
+		return self.__draw[:]
+
+	def current_draw(self):
+		return self.__draw[:]
+
+	def nb_players(self):
+		return len(self.__decks)
 
 	def nb_cards(self, id_player):
 		return self.__decks[id_player].number_of_cards()
+
+	def is_battle(self):
+		return len(compare_cards(self.__draw)) > 1
+
+	def turn_winner(self):
+		return self.__draw.index(compare_cards(self.__draw)[0])
+
+	def nb_cards_won(self, player):
+		return len(self.__wins[player])
+
+	def nb_points(self, player):
+		points = 0
+		for card in self.__wins[player]:
+			points += card.get_rank()
+		return points

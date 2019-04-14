@@ -1,14 +1,13 @@
 import logging
-import time
 from abc import abstractmethod
 
 from ivy.ivy import ivylogger, IvyServer
 
 
 class BattleGameHandler(IvyServer):
-	def __init__(self):
+	def __init__(self, name):
 		ivylogger.setLevel(logging.WARN)
-		self.name = "battle" + str(round(time.time()*1000))
+		self.name = name
 		IvyServer.__init__(self, self.name)
 
 	def run(self):

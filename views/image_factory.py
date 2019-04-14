@@ -1,29 +1,31 @@
 from PIL import Image, ImageTk
+from model.card import CardRank, CardSuite
 
 
 class ImageFactory:
-
 	class __ImageFactory:
-		WIDTH = 129
-		HEIGHT = 185
-
 		def __init__(self):
-			self.__cards = Image.open("../resources/cards.png")
+			self.__back = Image.open("../resources/cards/back.png")
+			self.__border = Image.open("../resources/cards/border.png")
+			self.__cards = dict()
 
-		def get(self, i, j):  # Retourne la carte en position (i,j) sur la planche
-			i %= 15
-			j %= 4
-			crop = self.__cards.crop((i * self.WIDTH, j * self.HEIGHT, (i + 1) * self.WIDTH, (j + 1) * self.HEIGHT))
-			return ImageTk.PhotoImage(crop)
+			for suite in CardSuite:
+				suite = CardSuite(suite).name
+				for rank in CardRank:
+					rank = CardRank(rank).name
+					self.__cards[rank + '_OF_' + suite] = Image.open("../resources/cards/" + rank + '_OF_' + suite + ".png")
 
-		def get_c(self, card):  # Retourne la carte en fonction du rang et de la suite
-			i = card.get_rank()
-			j = card.get_suite()
-			return self.get(i, j)
+		def get(self, card):  # Retourne l'image à partir d'un objet Carte
+			r = card.get_rank()
+			s = card.get_suite()
+			index = CardRank(r).name + "_OF_" + CardSuite(s).name
+			return ImageTk.PhotoImage(self.__cards[index])
 
 		def get_back(self):  # Retourne le dos d'une carte
-			crop = self.__cards.crop((0, 0, self.WIDTH, self.HEIGHT))
-			return ImageTk.PhotoImage(crop)
+			return ImageTk.PhotoImage(self.__back)
+
+		def get_border(self):  # Retourne la bordure d'une carte
+			return ImageTk.PhotoImage(self.__border)
 
 	instance = None
 

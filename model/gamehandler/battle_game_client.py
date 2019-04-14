@@ -1,3 +1,4 @@
+import time
 from model.gamehandler.battle_game_handler import BattleGameHandler
 
 
@@ -6,7 +7,7 @@ def default_callback(*args):
 
 
 class BattleGameClient(BattleGameHandler):
-	def __init__(self):
+	def __init__(self, name="client#" + str(round(time.time()*1000))):
 		self.players_names = []
 
 		self.on_new_room = default_callback  # gamehost_name, room_name
@@ -33,7 +34,7 @@ class BattleGameClient(BattleGameHandler):
 		self.__connecting_to_room = None
 		self.__connected_to_room = None
 
-		BattleGameHandler.__init__(self)
+		BattleGameHandler.__init__(self, name)
 
 	# Envoi de messages. #
 
