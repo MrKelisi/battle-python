@@ -20,4 +20,5 @@ class CreateRoomChooseFrame(Frame):
         Button(self, text="Retour au menu", command=lambda: master.raise_frame('start')).pack(pady=3)
 
     def init(self):
+        self.entry.delete(0, END)
         self.entry.insert(0, "Room#" + str(random.randint(1000, 9999)))
