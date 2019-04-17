@@ -1,3 +1,4 @@
+import re
 from enum import IntEnum
 
 
@@ -44,7 +45,7 @@ class Card:
 		"""
 		self.__suite = card_suite
 		self.__rank = card_rank
-		
+
 	def get_suite(self):
 		"""
 		Retourne la famille de la carte.
@@ -65,6 +66,23 @@ class Card:
 
 	def __repr__(self):
 		return str(self.__suite.name) + "(" + str(self.__rank.name) + ")"
+
+	@staticmethod
+	def parse(card_desc):
+		"""
+		Convertit la représentation en chaîne de caractères de description, donnée par __repr__, en un objet Card.
+
+		:param card_desc: La chaîne de caractères qui décrit la carte.
+		:type card_desc: str
+		:return: La carte, ou None si la description n'a pas pu être lue.
+		:rtype: Card
+		"""
+		matches = re.compile("([A-Z]+)\\(([A-Z]+)\\)").fullmatch(card_desc)  # Regex de découpage de la description.
+		if matches is not None:  # La description de la carte est valide.
+			# On peut construire la carte à partir des informations obtenues par le découpage.
+			return Card(CardSuite[matches.group(1)], CardRank[matches.group(2)])
+		else:  # La description de la carte est invalide.
+			return None
 
 	### OPÉRATEURS DE COMPARAISON ###
 

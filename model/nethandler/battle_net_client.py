@@ -1,12 +1,13 @@
 import time
-from model.gamehandler.battle_game_handler import BattleGameHandler
+
+from model.nethandler.battle_net_handler import BattleNetHandler
 
 
 def default_callback(*args):
 	pass
 
 
-class BattleGameClient(BattleGameHandler):
+class BattleNetClient(BattleNetHandler):
 	def __init__(self, name="client#" + str(round(time.time()*1000))):
 		self.players_names = []
 
@@ -27,14 +28,14 @@ class BattleGameClient(BattleGameHandler):
 
 		self.on_player_picked_card = default_callback  # client_name, card_desc
 
-		self.on_game_won = default_callback  #
-		self.on_game_lost = default_callback  # winner_name
+		self.on_game_ended = default_callback #
+		self.on_game_won = default_callback  # winner_name
 		self.on_game_par = default_callback  # winners_names
 
 		self.__connecting_to_room = None
 		self.__connected_to_room = None
 
-		BattleGameHandler.__init__(self, name)
+		BattleNetHandler.__init__(self, name)
 
 	# Envoi de messages. #
 
@@ -103,10 +104,6 @@ class BattleGameClient(BattleGameHandler):
 			else:
 				self.on_player_card_drawn(client_name, card_desc)
 
-	def ivy__game_turn_won(self, agent, winner_name):
-		if self.__connected_to_room == agent.agent_name:
-			self.on_turn_finished(winner_name)
-
 	def ivy__game_turn_battle(self, agent, battle_members_names, _):
 		if self.__connected_to_room == agent.agent_name:
 			others_member_names = []
@@ -119,17 +116,27 @@ class BattleGameClient(BattleGameHandler):
 					others_member_names.append(battle_member_name)
 			self.on_turn_battle_with(in_battle, others_member_names)
 
+	def ivy__game_turn_won(self, agent, winner_name):
+		if self.__connected_to_room == agent.agent_name:
+			self.on_turn_finished(winner_name)
+
+	def ivy__game_turn_par(self, agent):
+		if self.__connected_to_room == agent.agent_name:
+			self.on_turn_finished(None)
+
 	def ivy__game_turn_card_pick(self, agent, gamehost_name, card_desc):
 		if self.__connected_to_room == gamehost_name:
 			if agent.agent_name in self.players_names:
 				self.on_player_picked_card(agent.agent_name, card_desc)
 
+	def ivy__game_ended(self, agent, player_name):
+		if self.__connected_to_room == agent.agent_name:
+			if self.name == player_name:
+				self.on_game_ended()
+
 	def ivy__game_won(self, agent, winner_name):
 		if self.__connected_to_room == agent.agent_name:
-			if self.name == winner_name:
-				self.on_game_won()
-			else:
-				self.on_game_lost(winner_name)
+			self.on_game_won(winner_name)
 
 	def ivy__game_par(self, agent, winners_names, _):
 		if self.__connected_to_room == agent.agent_name:

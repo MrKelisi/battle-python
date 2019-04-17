@@ -4,7 +4,7 @@ from abc import abstractmethod
 from ivy.ivy import ivylogger, IvyServer
 
 
-class BattleGameHandler(IvyServer):
+class BattleNetHandler(IvyServer):
 	def __init__(self, name):
 		ivylogger.setLevel(logging.WARN)
 		self.name = name
@@ -24,7 +24,7 @@ class BattleGameHandler(IvyServer):
 		# accept_player [player_name].
 		self.bind_msg(self.ivy__accept_player, "accept_player: ([^,.]+)\\.")
 		# players_list [[player_name], [...]].
-		self.bind_msg(self.ivy__players_list, "players_list \\[(([^,.]+, )+)\\]\\.")
+		self.bind_msg(self.ivy__players_list, "players_list: \\[(([^,.]+, )+)\\]\\.")
 
 		# game_begin.
 		self.bind_msg(self.ivy__game_begin, "game_begin\\.")
@@ -35,13 +35,17 @@ class BattleGameHandler(IvyServer):
 		self.bind_msg(self.ivy__game_turn_draw_card, "game_turn_draw_card: ([^,.]+)\\.")
 		# game_turn_card_drawn [player_name], [card_desc].
 		self.bind_msg(self.ivy__game_turn_card_drawn, "game_turn_card_drawn: ([^,.]+), ([^,.]+)\\.")
-		# game_turn_won [player_name]
-		self.bind_msg(self.ivy__game_turn_won, "game_turn_won: ([^,.]+)\\.")
 		# game_turn_battle [[player_name], [...]].
 		self.bind_msg(self.ivy__game_turn_battle, "game_turn_battle: \\[(([^,.]+, )+)\\].")
+		# game_turn_won [player_name].
+		self.bind_msg(self.ivy__game_turn_won, "game_turn_won: ([^,.]+)\\.")
+		# game_turn_par.
+		self.bind_msg(self.ivy__game_turn_par, "game_turn_par\\.")
 		# game_turn_card_pick [gamehost_name], [card_desc].
 		self.bind_msg(self.ivy__game_turn_card_pick, "game_turn_card_pick: ([^,.]+), ([^,.]+)\\.")
 
+		# game_ended [player_name].
+		self.bind_msg(self.ivy__game_ended, "game_ended: ([^,.]+)\\.")
 		# game_won [winner_name].
 		self.bind_msg(self.ivy__game_won, "game_won: ([^,.]+)\\.")
 		# game_par [[winner_name], [...]].
@@ -99,15 +103,23 @@ class BattleGameHandler(IvyServer):
 		pass
 
 	@abstractmethod
-	def ivy__game_turn_won(self, agent, winner_name):
-		pass
-
-	@abstractmethod
 	def ivy__game_turn_battle(self, agent, battle_members_names, _):
 		pass
 
 	@abstractmethod
+	def ivy__game_turn_won(self, agent, winner_name):
+		pass
+
+	@abstractmethod
+	def ivy__game_turn_par(self, agent):
+		pass
+
+	@abstractmethod
 	def ivy__game_turn_card_pick(self, agent, gamehost_name, card_desc):
+		pass
+
+	@abstractmethod
+	def ivy__game_ended(self, agent, player_name):
 		pass
 
 	@abstractmethod
