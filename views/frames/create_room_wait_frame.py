@@ -1,6 +1,7 @@
 import time
 from tkinter import *
-from model.gamehandler.battle_game_server import BattleGameServer
+
+from model.nethandler.battle_net_server import BattleNetServer
 
 
 class CreateRoomWaitFrame(Frame):
@@ -35,7 +36,7 @@ class CreateRoomWaitFrame(Frame):
             self.master.handler.stop()
             time.sleep(0.1)
 
-        self.master.handler = BattleGameServer(self.master.room_name, self.master.player_name)
+        self.master.handler = BattleNetServer(self.master.room_name, self.master.player_name)
         self.master.handler.on_new_player = on_new_player
         self.master.handler.run()
 

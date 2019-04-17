@@ -1,6 +1,7 @@
 import time
 from tkinter import *
-from model.gamehandler.battle_game_client import BattleGameClient
+
+from model.nethandler.battle_net_client import BattleNetClient
 
 
 class JoinRoomChooseFrame(Frame):
@@ -43,7 +44,7 @@ class JoinRoomChooseFrame(Frame):
             self.master.handler.stop()
             time.sleep(0.1)
 
-        self.master.handler = BattleGameClient(self.master.player_name)
+        self.master.handler = BattleNetClient(self.master.player_name)
         self.master.handler.on_new_room = on_new_room
         self.master.handler.on_room_connection_accepted = on_room_connection_accepted
         self.master.handler.on_room_connection_failed = on_room_connection_failed

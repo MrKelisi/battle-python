@@ -1,8 +1,8 @@
-import time
 from tkinter import *
+
+from model.nethandler.battle_net_client import BattleNetClient
+from model.nethandler.battle_net_server import BattleNetServer
 from views.image_factory import ImageFactory
-from model.gamehandler.battle_game_server import BattleGameServer
-from model.gamehandler.battle_game_client import BattleGameClient
 from model.battle import Battle
 from model.card import *
 
@@ -77,7 +77,7 @@ class GameFrame(Frame):
 
         # ===== INITIALISATION D'UN PLATEAU DE SERVEUR =====
 
-        if isinstance(self.master.handler, BattleGameServer):
+        if isinstance(self.master.handler, BattleNetServer):
 
             self.players.append(self.master.handler.name)
             for agent in self.master.handler.players:
@@ -109,7 +109,7 @@ class GameFrame(Frame):
 
         # ===== INITIALISATION D'UN PLATEAU DE CLIENT =====
 
-        elif isinstance(self.master.handler, BattleGameClient):
+        elif isinstance(self.master.handler, BattleNetClient):
 
             self.players.append(self.master.handler.name)
             self.players.extend(self.master.handler.players_names)
