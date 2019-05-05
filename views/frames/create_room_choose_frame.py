@@ -14,7 +14,9 @@ class CreateRoomChooseFrame(Frame):
         Label(self, text="Choisissez un nom de salon :", font=("Helvetica", 18)).pack(side="top", pady=20)
 
         self.entry = Entry(self)
-        self.entry.pack(pady=15)
+        self.entry.pack(pady=(15, 0))
+
+        Checkbutton(self, text="Partie rapide", variable=self.master.shortRule).pack(pady=(5, 15))
 
         Button(self, text="Créer le salon", command=on_create_room).pack(pady=3)
         Button(self, text="Retour au menu", command=lambda: master.raise_frame('start')).pack(pady=3)

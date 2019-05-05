@@ -1,4 +1,7 @@
+import time
 from tkinter import *
+
+from model.battle import ClientBattle
 
 
 class JoinRoomWaitFrame(Frame):
@@ -22,6 +25,8 @@ class JoinRoomWaitFrame(Frame):
 
         def on_game_begin():
             print('== Game begins!')
+            self.master.battle = ClientBattle(self.master.handler)
+            time.sleep(1)
             self.master.raise_frame('game')
 
         self.master.handler.on_players_list_updated = on_players_list_updated

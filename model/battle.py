@@ -116,16 +116,16 @@ class Battle:
 		self.is_game_ended = False
 
 		self.on_new_turn = default_callback
-		self.on_card_drawn = default_callback
+		self.on_card_drawn = default_callback  # player_name, card
 
-		self.on_battle = default_callback
-		self.on_turn_finished = default_callback
+		self.on_battle = default_callback  # in_battle, other_members_names
+		self.on_turn_finished = default_callback  # winner_name
 		self.on_turn_par = default_callback
-		self.on_player_picked_card = default_callback
+		self.on_player_picked_card = default_callback  # card
 
 		self.on_game_ended = default_callback
-		self.on_game_won = default_callback
-		self.on_game_par = default_callback
+		self.on_game_won = default_callback  # winner_name
+		self.on_game_par = default_callback  # winners_names
 
 	@abstractmethod
 	def draw_card(self):
@@ -314,7 +314,7 @@ class ServerBattle(Battle):
 			self.__cards_played[self.__game_server.name].append(card)  # Ajout aux cartes jouées par le joueur.
 			self.__number_of_cards_to_play[self.__game_server.name] -= 1  # On réduit de 1 les cartes qu'il lui reste à jouer.
 			self.__game_server.game_turn_card_drawn(self.__game_server.name, str(card))  # Envoi de la carte tirée aux clients.
-			self.on_card_drawn(self.__game_server.name, card)
+			self.on_card_drawn(None, card)
 			self.__turn_handle_results()  # Vérification de la fin de la période de tirage des cartes.
 
 	def __card_drawn_by_player(self, player_name):

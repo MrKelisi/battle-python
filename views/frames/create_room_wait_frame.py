@@ -1,6 +1,7 @@
 import time
 from tkinter import *
 
+from model.battle import ServerBattle
 from model.nethandler.battle_net_server import BattleNetServer
 
 
@@ -10,10 +11,9 @@ class CreateRoomWaitFrame(Frame):
 
         def on_play():
             if self.nb_players > 1:
-                self.master.handler.game_begin()
                 print('== Game begins!')
-                self.master.handler.game_new_turn()
                 print('== New turn!')
+                self.master.battle = ServerBattle(self.master.handler, self.master.shortRule.get())
                 self.master.raise_frame('game')
 
         self.nb_players = 1
