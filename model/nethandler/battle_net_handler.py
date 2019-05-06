@@ -15,8 +15,8 @@ class BattleNetHandler(IvyServer):
 
 		# find_rooms.
 		self.bind_msg(self.ivy__find_rooms, "find_rooms\\.")
-		# room: [room_name].
-		self.bind_msg(self.ivy__room, "room: ([^,.]+)\\.")
+		# room: [room_name], [short_rule], [no_card_upside_down].
+		self.bind_msg(self.ivy__room, "room: ([^,.]+), (true|false), (true|false)\\.")
 		# connect_room: [gamehost_name].
 		self.bind_msg(self.ivy__connect_room, "connect_room: ([^,.]+)\\.")
 		# room_is_full.
@@ -67,7 +67,7 @@ class BattleNetHandler(IvyServer):
 		pass
 
 	@abstractmethod
-	def ivy__room(self, agent, room_name):
+	def ivy__room(self, agent, room_name, short_rule, no_card_upside_down):
 		pass
 
 	@abstractmethod

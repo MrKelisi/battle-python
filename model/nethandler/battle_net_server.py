@@ -8,8 +8,21 @@ def default_callback(*args):
 
 
 class BattleNetServer(BattleNetHandler):
-	def __init__(self, room_name, name="server#" + str(round(time.time()*1000))):
+	def __init__(self, room_name, short_rule=True, no_card_upside_down=False, name="server#" + str(round(time.time()*1000))):
+		"""
+		Constructeur d'un serveur du jeu de la bataille.
+		:param room_name: Nom de la salle à ouvrir.
+		:type room_name: str
+		:param short_rule: Vrai si la règle courte doit être utilisée, faux si la règle longue doit être utilisée.
+		:type short_rule: bool
+		:param no_card_upside_down: Vrai s'il ne doit pas y avoir de carte à l'envers durant une bataille, faux sinon.
+		:type no_card_upside_down: bool
+		:param name: Nom du joueur hébergeant la salle.
+		:type name: str
+		"""
 		self.room_name = room_name
+		self.short_rule = short_rule
+		self.no_card_upside_down = no_card_upside_down
 		self.players = []
 		self.game_started = False
 
@@ -22,7 +35,7 @@ class BattleNetServer(BattleNetHandler):
 	# Envoi de messages. #
 
 	def room(self):
-		self.send_msg("room: " + self.room_name + ".")
+		self.send_msg("room: " + self.room_name + ", " + ("true" if self.short_rule else "false") + ", " + ("true" if self.no_card_upside_down else "false") + ".")
 
 	def players_list(self):
 		players_list_cmd = "players_list: [" + self.agent_name + ", "
@@ -73,7 +86,7 @@ class BattleNetServer(BattleNetHandler):
 		if not self.game_started:
 			self.room()
 
-	def ivy__room(self, agent, room_name):
+	def ivy__room(self, agent, room_name, short_rule, no_card_upside_down):
 		pass  # Rien à gérer dans le cas d'un serveur, il gère sa salle sans se soucier des salles "voisines".
 
 	def ivy__connect_room(self, agent, gamehost_name):

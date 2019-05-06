@@ -183,19 +183,16 @@ class Battle:
 
 
 class ServerBattle(Battle):
-	def __init__(self, battle_net_server, short_rule=True):
+	def __init__(self, battle_net_server):
 		"""
 		Initialise les callbacks et les données nécessaires du jeu de la bataille pour un serveur.
 		:param battle_net_server: Le NetHandler du serveur.
 		:type battle_net_server: BattleNetServer
-		:param short_rule: Vrai si la règle courte doit être utilisée, faux si la règle longue doit être utilisée.
-		:type short_rule: bool
 		"""
 		Battle.__init__(self)
 
 		# Valeurs en paramètre.
 		self.__game_server = battle_net_server
-		self.__short_rule = short_rule
 
 		# Initialisation des joueurs dans le jeu : tous les joueurs connectés aux serveur + le serveur lui-même.
 		self.__players_in_game = []
@@ -267,7 +264,7 @@ class ServerBattle(Battle):
 			self.__game_server.game_new_turn()
 			self.on_new_turn()
 		else:  # Il reste une personne ou moins dans la partie.
-			if self.__short_rule:
+			if self.__game_server.short_rule:
 				# Dans le cas de la règle courte, il peut rester 0 ou 1 personne. S'il reste une personne seule, on rajoute
 				# les cartes qu'il lui reste à ses points, puis on termine la partie.
 
@@ -417,7 +414,7 @@ class ServerBattle(Battle):
 				self.__cards_to_pick[None].pop(i)  # On supprime la carte de la liste des cartes à récupérer.
 				self.__game_server.game_turn_card_pick(str(card))  # On indique aux autres qu'on a récupéré la carte.
 				self.__players_points[self.__game_server.name] += 1
-				if not self.__short_rule:  # Dans la règle longue, on remet la carte récupérée en dessous du paquet.
+				if not self.__game_server.short_rule:  # Dans la règle longue, on remet la carte récupérée en dessous du paquet.
 					self.__players_decks[self.__game_server.name].insert_card(card)
 				self.on_player_picked_card(card)
 				break
@@ -431,7 +428,7 @@ class ServerBattle(Battle):
 			if card == self.__cards_to_pick[player_name][i]:
 				self.__cards_to_pick[player_name].pop(i)  # On supprime la carte de la liste des cartes à récupérer.
 				self.__players_points[player_name] += 1
-				if not self.__short_rule:  # Dans la règle longue, on remet la carte récupérée en dessous du paquet.
+				if not self.__game_server.short_rule:  # Dans la règle longue, on remet la carte récupérée en dessous du paquet.
 					self.__players_decks[player_name].insert_card(card)
 				self.on_player_picked_card(card)
 				break

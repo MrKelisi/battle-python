@@ -11,7 +11,7 @@ class BattleNetClient(BattleNetHandler):
 	def __init__(self, name="client#" + str(round(time.time()*1000))):
 		self.players_names = []
 
-		self.on_new_room = default_callback  # gamehost_name, room_name
+		self.on_new_room = default_callback  # gamehost_name, room_name, short_rule, no_card_upside_down
 		self.on_room_is_full = default_callback  # gamehost_name
 		self.on_another_game_begin = default_callback  # gamehost_name
 		self.on_room_connection_accepted = default_callback  #
@@ -28,7 +28,7 @@ class BattleNetClient(BattleNetHandler):
 
 		self.on_player_picked_card = default_callback  # client_name, card_desc
 
-		self.on_game_ended = default_callback #
+		self.on_game_ended = default_callback  #
 		self.on_game_won = default_callback  # winner_name
 		self.on_game_par = default_callback  # winners_names
 
@@ -57,8 +57,9 @@ class BattleNetClient(BattleNetHandler):
 	def ivy__find_rooms(self, agent):
 		pass  # Rien à gérer dans le cas d'un client, c'est lui qui demande quelles sont les salles voisines.
 
-	def ivy__room(self, agent, room_name):
-		self.on_new_room(agent.agent_name, room_name)
+	def ivy__room(self, agent, room_name, short_rule, no_card_upside_down):
+		self.on_new_room(agent.agent_name, room_name,
+		                 True if short_rule == "true" else False, True if no_card_upside_down == "true" else False)
 
 	def ivy__connect_room(self, agent, gamehost_name):
 		pass  # Rien à gérer dans le cas d'un client, c'est lui qui envoie les demandes de connexion à une salle.

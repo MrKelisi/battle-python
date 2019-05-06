@@ -3,13 +3,17 @@ from model.battle import *
 from model.nethandler.battle_net_client import BattleNetClient
 
 
-def room_found(gamehost_name, room_name):
+def room_found(gamehost_name, room_name, short_rule, no_card_upside_down):
 	"""
 	Lancé lorsqu'une salle a été trouvée. Si on n'est pas déjà connecté à une salle, on tente de s'y connecter.
 	:param gamehost_name: Nom de l'hôte de la salle de jeu.
 	:type gamehost_name: str
 	:param room_name: Nom de la salle.
 	:type room_name: str
+	:param short_rule: Définit si la règle courte est utilisée dans cette salle ou non.
+	:type short_rule: bool
+	:param no_card_upside_down: Définit si on doit avoir une carte retournée lors d'une bataille.
+	:type no_card_upside_down: bool
 	"""
 	global connected
 	print("Salle : " + room_name + " sur " + gamehost_name + ".")
