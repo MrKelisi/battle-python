@@ -1,5 +1,6 @@
 import time
 from tkinter import *
+from tkinter import ttk
 
 from model.nethandler.battle_net_client import BattleNetClient
 
@@ -9,17 +10,28 @@ class JoinRoomChooseFrame(Frame):
         Frame.__init__(self, master)
 
         def on_room_selected(evt):
-            index = int(self.listbox.curselection()[0])
-            self.master.room_name = self.listbox.get(index)
-            master.handler.connect_room(self.rooms[self.master.room_name])
+            table_item = self.tableview.item(self.tableview.selection()[0])
+            self.master.room_name = table_item["text"]
+            # Le dernier élément de la liste des valeurs est le nom de l'hébergeur de la partie.
+            self.master.handler.connect_room(table_item["values"][len(table_item["values"]) - 1])
 
         self.rooms = dict()
 
-        Label(self, text="Choisissez un salon :", font=("Helvetica", 18)).pack(side="top", pady=20)
+        Label(self, text="Choisissez un salon", font=("Helvetica", 18)).pack(side="top", pady=20)
 
-        self.listbox = Listbox(self)
-        self.listbox.pack(pady=15)
-        self.listbox.bind('<ButtonRelease-1>', on_room_selected)
+        Label(self, text="Double cliquez sur un salon pour entrer dans la partie.", font=("Helvetica", 12)).pack(side="top")
+
+        self.tableview = ttk.Treeview(self, columns=("rule_type", "card_upside_down"))
+
+        self.tableview.heading("#0", text="Nom")
+        self.tableview.column("#0", width=200)
+        self.tableview.heading("rule_type", text="Type de partie")
+        self.tableview.column("rule_type", width=150)
+        self.tableview.heading("card_upside_down", text="Carte retournée dans la bataille")
+        self.tableview.column("card_upside_down", width=300)
+
+        self.tableview.pack(pady=15)
+        self.tableview.bind("<Double-1>", on_room_selected)
 
         Button(self, text="Rafraîchir", command=lambda: master.handler.find_rooms()).pack(pady=3)
 
@@ -28,11 +40,20 @@ class JoinRoomChooseFrame(Frame):
         self.error = Label(self, fg='red')
         self.error.pack(pady=3)
 
+    def __show_table_view_content(self):
+        self.tableview.delete(*self.tableview.get_children())
+        for room_gamehost_name in self.rooms.keys():
+            room_data = self.rooms[room_gamehost_name]
+            self.tableview.insert("", END, text=room_data[0],  # name
+                                  values=("Courte" if room_data[1] else "Longue",  # rule_type
+                                          "Non" if room_data[2] else "Oui",  # card_upside_down
+                                          # Le dernier élément de la liste des valeurs est le nom de l'hébergeur de la partie.
+                                          room_gamehost_name))
+
     def init(self):
-        def on_new_room(gamehost_name, room_name):
-            self.rooms[room_name] = gamehost_name
-            self.listbox.delete(0, END)
-            self.listbox.insert(END, *self.rooms.keys())
+        def on_new_room(gamehost_name, room_name, short_rule, no_card_upside_down):
+            self.rooms[gamehost_name] = (room_name, short_rule, no_card_upside_down)
+            self.__show_table_view_content()
 
         def on_room_connection_accepted():
             self.master.raise_frame('join_room_wait')

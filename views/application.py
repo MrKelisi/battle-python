@@ -23,6 +23,7 @@ class Application(Tk):
         self.room_name = ""
         self.player_name = ""
         self.shortRule = BooleanVar(value=True)
+        self.noCardUpsideDown = BooleanVar(value=False)
         self.winners = []
 
         self.frames = dict()

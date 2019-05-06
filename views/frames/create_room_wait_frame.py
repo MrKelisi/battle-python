@@ -13,7 +13,7 @@ class CreateRoomWaitFrame(Frame):
             if self.nb_players > 1:
                 print('== Game begins!')
                 print('== New turn!')
-                self.master.battle = ServerBattle(self.master.handler, self.master.shortRule.get())
+                self.master.battle = ServerBattle(self.master.handler)
                 self.master.raise_frame('game')
 
         self.nb_players = 1
@@ -36,7 +36,8 @@ class CreateRoomWaitFrame(Frame):
             self.master.handler.stop()
             time.sleep(0.1)
 
-        self.master.handler = BattleNetServer(self.master.room_name, self.master.player_name)
+        self.master.handler = BattleNetServer(self.master.room_name, self.master.shortRule.get(),
+                                              self.master.noCardUpsideDown.get(), self.master.player_name)
         self.master.handler.on_new_player = on_new_player
         self.master.handler.run()
 

@@ -16,7 +16,9 @@ class CreateRoomChooseFrame(Frame):
         self.entry = Entry(self)
         self.entry.pack(pady=(15, 0))
 
-        Checkbutton(self, text="Partie rapide", variable=self.master.shortRule).pack(pady=(5, 15))
+        Checkbutton(self, text="Partie rapide", variable=self.master.shortRule).pack(pady=(5, 5))
+        Checkbutton(self, text="Pas de carte retournée durant la bataille", variable=self.master.noCardUpsideDown)\
+            .pack(pady=(5, 15))
 
         Button(self, text="Créer le salon", command=on_create_room).pack(pady=3)
         Button(self, text="Retour au menu", command=lambda: master.raise_frame('start')).pack(pady=3)
