@@ -7,6 +7,7 @@ class ImageFactory:
 		def __init__(self):
 			self.__back = Image.open("../resources/cards/back.png")
 			self.__border = Image.open("../resources/cards/border.png")
+			self.__deck = Image.open("../resources/cards/deck.png")
 			self.__cards = dict()
 
 			for suite in CardSuite:
@@ -26,6 +27,9 @@ class ImageFactory:
 
 		def get_border(self):  # Retourne la bordure d'une carte
 			return ImageTk.PhotoImage(self.__border)
+
+		def get_deck(self):  # Retourne le paquet de carte
+			return ImageTk.PhotoImage(self.__deck)
 
 	instance = None
 

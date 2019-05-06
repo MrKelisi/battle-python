@@ -11,64 +11,65 @@ class GameFrame(Frame):
         # self.master.wm_attributes('-transparentcolor', 'lime')
 
         self.nb_players = 2
+
         self.can_draw = True
-        self.can_pick = False
-        self.in_battle = False
-        self.on_battle = False
+        self.can_pick_mine = False
+        self.can_pick_all = False
         self.on_par = False
+        self.in_battle = False
         self.game_ended = False
+
         self.battle_stage = [0, 0, 0, 0]
         self.players = []
-        self.nb_cards_drawed = 0
 
         self._coords_x = [150, 390, 520, 650]
         self._coords_y = [75, 100, 285]
 
-        self._sheet = Canvas(self, bg="darkblue", border=3)
+        self._sheet = Canvas(self, bg="darkblue", border=3, highlightbackground='lightblue')
         self._sheet.place(relx=0.025, rely=0.05, anchor=NW, bordermode=INSIDE, relwidth=0.95, relheight=0.65)
 
-        # ===== DECK PIC =====
+        # ===== DECK =====
 
         self._deck = Label(self, bg="darkblue")
-        self._deck.image = ImageFactory.instance.get_back()
+        self._deck.image = ImageFactory.instance.get_deck()
         self._deck.config(image=self._deck.image)
-        self._deck.place(relx=0.25, rely=1, anchor=CENTER)
+        self._deck.place(relx=0.25, rely=1, anchor=S)
+
+        # ===== DEFAUSSE =====
+
+        self._defausse = Label(self, bg="darkblue")
+        self._defausse.place(relx=0.65, rely=1, anchor=CENTER)
 
         # ===== PLAYERS NAMES =====
 
-        self._labels_players = []
+        self._players_names = []
         for i in range(4):
-            self._labels_players.append(Label(self, fg="white", bg="darkblue"))
-            self._labels_players[i].place(x=self._coords_x[i], y=self._coords_y[0], anchor=NW)
+            self._players_names.append(Label(self, fg="white", bg="darkblue"))
+            self._players_names[i].place(x=self._coords_x[i], y=self._coords_y[0], anchor=NW)
 
         # ===== CARDS =====
 
-        self._labels_cards = []
+        self._cards = []
         for i in range(12):
-            self._labels_cards.append(Label(self, bg="darkblue", borderwidth=0))
-            self._labels_cards[i].place(x=self._coords_x[i % 4], y=self._coords_y[1] + int(i/4) * 20, anchor=NW)
-            self._labels_cards[i].bind('<ButtonRelease-1>', self.pick_card)
-            self._labels_cards[i].bind('<B1-Motion>', self.drag_card)
-            self._labels_cards[i].card = None
-            self._labels_cards[i].lower()
-
-        me = self._labels_cards[0]
-        me.image = ImageFactory.instance.get_border()
-        me.config(image=me.image)
+            self._cards.append(Label(self, bg="darkblue", borderwidth=0))
+            self._cards[i].place(x=self._coords_x[i % 4], y=self._coords_y[1] + int(i / 4) * 20, anchor=NW)
+            self._cards[i].bind('<ButtonRelease-1>', self.card_picked)
+            self._cards[i].bind('<B1-Motion>', self.drag_card)
+            self._cards[i].card = None
 
         # ===== MESSAGES =====
 
-        self._labels_msg = []
+        self._messages = []
         for i in range(4):
-            self._labels_msg.append(Label(self, fg="gold", bg="darkblue"))
-            self._labels_msg[i].place(x=self._coords_x[i], y=self._coords_y[2], anchor=NW)
+            self._messages.append(Label(self, fg="gold", bg="darkblue"))
+            self._messages[i].place(x=self._coords_x[i], y=self._coords_y[2], anchor=NW)
 
         # ===== SCORES =====
 
-        self._labels_scores = []
+        self._scores = []
         for i in range(4):
-            self._labels_scores.append(Label(self, fg="gold", bg="darkblue"))
-            self._labels_scores[i].place(y=i*25, relx=0.975, rely=0.75, anchor=NE)
+            self._scores.append(Label(self, fg="gold", bg="darkblue"))
+            self._scores[i].place(y=i * 25, relx=0.975, rely=0.75, anchor=NE)
 
         # ===== TOP CARD =====
 
@@ -76,7 +77,7 @@ class GameFrame(Frame):
         self._top_card.image = ImageFactory.instance.get_back()
         self._top_card.config(image=self._top_card.image)
         self._top_card.place(relx=0.25, rely=1, anchor=CENTER)
-        self._top_card.bind('<ButtonRelease-1>', self.release_card)
+        self._top_card.bind('<ButtonRelease-1>', self.card_drawed)
         self._top_card.bind('<B1-Motion>', self.drag_card)
 
     def init(self):
@@ -108,32 +109,34 @@ class GameFrame(Frame):
         def on_card_drawn(player_name, card):
             if player_name:
                 print(player_name + ' drawed ' + str(card))
-                index = self.players.index(player_name)
+                index_player = self.players.index(player_name)
             else:
                 print('I drawed ' + str(card))
-                index = 0
+                index_player = 0
 
-            if self.on_battle:
-                self.battle_stage[index] += 1
-                index += self.battle_stage[index] * 4
+            index = index_player + self.battle_stage[index_player] * 4
+            self.battle_stage[index_player] += 1
 
-            if index / 4 == 1:
+            if (not self.master.handler.no_card_upside_down) and (int(index / 4) == 1):
                 image = ImageFactory.instance.get_back()
             else:
                 image = ImageFactory.instance.get(card)
 
             self.update_card_img(index, image)
-            self._labels_cards[index].card = card
+            self._cards[index].card = card
 
         def on_battle(in_battle, other_members_names):
             print('== Battle!')
-            self.on_battle = True
             if in_battle:
-                self._labels_msg[0]['text'] = "BATTLE!"
+                self.can_draw = True
                 self.in_battle = True
+                self.replace_top_card()
+                self.battle_stage[0] = 1
+                self._messages[0]['text'] = "BATTLE!"
             for i in range(1, self.nb_players):
                 if self.players[i] in other_members_names:
-                    self._labels_msg[i]['text'] = "BATTLE!"
+                    self.battle_stage[i] = 1
+                    self._messages[i]['text'] = "BATTLE!"
 
         def on_turn_finished(winner_name):
             if winner_name:
@@ -142,33 +145,41 @@ class GameFrame(Frame):
             else:
                 print('== I win this turn!')
                 index = 0
-                self.can_pick = True
+                self.can_pick_all = True
 
+            self.can_draw = False
             self.in_battle = False
-            self.on_battle = False
-            self.battle_stage = [0, 0, 0, 0]
 
-            for label in self._labels_msg:
+            self.battle_stage = [0, 0, 0, 0]
+            for label in self._messages:
                 label['text'] = ''
-            self._labels_msg[index]['text'] = "WIN!"
+            self._messages[index]['text'] = "WIN!"
+
+            self.hide_top_card()
 
         def on_turn_par():
             print("== Turn par!")
+
             self.on_par = True
+            self.can_pick_mine = True
             self.in_battle = False
-            self.on_battle = False
-            self._labels_msg[0]['text'] = "PAR"
+
+            self.battle_stage = [0, 0, 0, 0]
+            self._messages[0]['text'] = "PAR"
+
+            self.hide_top_card()
 
         def on_player_picked_card(card):
             for i in range(12):
-                label_card = self._labels_cards[i]
+                label_card = self._cards[i]
                 if label_card.card and label_card.card == card:
                     label_card.image = None
                     label_card.lower()
                     break
 
         def on_game_ended():
-            print("== No more card")
+            print("== No more card for me")
+            self.game_ended = True
             self._top_card.place_forget()
             self._deck.place_forget()
 
@@ -197,14 +208,13 @@ class GameFrame(Frame):
         self.master.battle.on_game_won = on_game_won
         self.master.battle.on_game_par = on_game_par
 
-        # ===== INITIALISATION DES LABELS =====
-
         self.nb_players = len(self.players)
 
         for i in range(self.nb_players):
-            self._labels_players[i]['text'] = self.players[i]
-            if i == 0:
-                self._labels_players[i]['text'] += ' (me)'
+            self._players_names[i]['text'] = self.players[i] + (' (me)' if (i == 0) else '')
+
+        self.new_turn()
+        self.refresh_scores()
 
     # ===== FONCTIONS UTILES =====
 
@@ -212,62 +222,84 @@ class GameFrame(Frame):
         my_points = self.master.battle.my_points()
         others_points = self.master.battle.others_points()
 
-        self._labels_scores[0]['text'] = "{} : {} pts".format(self.players[0], my_points)
-        for i in range(1, self.nb_players):
-            self._labels_scores[i]['text'] = "{} : {} pts".format(self.players[i], others_points[self.players[i]])
+        for i in range(0, self.nb_players):
+            self._scores[i]['text'] = "{} : {} pts".format(self.players[i], my_points if (i == 0) else others_points[self.players[i]])
 
     def update_card_img(self, index, new_img):
-        label_card = self._labels_cards[index]
-        label_card.image = new_img
-        label_card.config(image=new_img)
-        label_card.lift()
-
-    def reset_top_card_position(self):
-        if not self.game_ended:
-            self._top_card.place(relx=0.25, rely=1, x=0, y=0)
+        card = self._cards[index]
+        card.image = new_img
+        card.config(image=new_img)
+        card.lift()
 
     def drag_card(self, evt):
-        if self.can_draw or self.in_battle:
+        def dragging(card):
             x, y = self.winfo_pointerx() - self.master.winfo_rootx(), self.winfo_pointery() - self.master.winfo_rooty()
-            evt.widget.place(x=x, y=y, relx=0, rely=0, anchor=CENTER)
-            evt.widget.lift()
+            card.place(x=x, y=y, relx=0, rely=0, anchor=CENTER)
+            card.lift()
+            return
 
-    def release_card(self, evt):
-        # TODO: seulement si la carte est dans la zone de dépôt ?
+        if self.can_draw and not self.game_ended:
+            if evt.widget == self._top_card:
+                dragging(evt.widget)
+
+        if self.can_pick_mine:
+            index = self._cards.index(evt.widget)
+            if index % 4 == 0:
+                dragging(evt.widget)
+
+        if self.can_pick_all:
+            if evt.widget in self._cards:
+                dragging(evt.widget)
+
+    def card_drawed(self, evt):
         if self.can_draw:
-            self.can_draw = False
-            self.reset_top_card_position()
-            self.update_card_img(0, ImageFactory.instance.get_back())
-
+            self.can_draw = self.in_battle
             self.master.battle.draw_card()
 
-        if self.in_battle:
-            self.reset_top_card_position()
+            if self.in_battle:
+                self.replace_top_card()
+            else:
+                self.hide_top_card()
 
-            self.master.battle.draw_card()
+    def card_picked(self, evt):
+        if self.can_pick_all:
+            self.master.battle.pick_card(evt.widget.card)
+            self.replace_card_in_sheet(evt.widget)
 
-    def pick_card(self, evt):
-        label_card = evt.widget
-
-        if self.can_pick:
-            label_card.image = None
-            self.master.battle.pick_card(label_card.card)
-
-        if self.on_par:
-            if (self._labels_cards.index(label_card) % 4) == 0:
-                label_card.image = None
-                self.master.battle.pick_card(label_card.card)
+        if self.can_pick_mine:
+            index = self._cards.index(evt.widget)
+            if index % 4 == 0:
+                self.master.battle.pick_card(evt.widget.card)
+                self.replace_card_in_sheet(evt.widget)
 
     def new_turn(self):
         self.can_draw = True
-        self.can_pick = False
+        self.can_pick_all = False
+        self.can_pick_mine = False
         self.in_battle = False
-        self.on_par = False
 
         for i in range(self.nb_players):
-            self._labels_msg[i]['text'] = ''
+            self._messages[i]['text'] = ''
 
-        me = self._labels_cards[0]
-        me.image = ImageFactory.instance.get_border()
-        me.config(image=me.image)
-        me.lift()
+        self.update_card_img(0, ImageFactory.instance.get_border())
+        self.replace_top_card()
+
+    def replace_card_in_sheet(self, card):
+        if not self.on_par:
+            self._defausse.image = ImageFactory.instance.get(card.card)
+            self._defausse.config(image=self._defausse.image)
+
+        i = self._cards.index(card)
+        x, y = self._coords_x[i % 4], self._coords_y[1] + int(i / 4) * 20
+        card.place(x=x, y=y, anchor=NW)
+        card.image = None
+        card.lower()
+
+    def replace_top_card(self):
+        if self.game_ended:
+            self.hide_top_card()
+        else:
+            self._top_card.place(relx=0.25, rely=1, x=0, y=0, anchor=CENTER)
+
+    def hide_top_card(self):
+        self._top_card.place(relx=0.25, rely=1, x=0, y=0, anchor=N)

@@ -14,13 +14,13 @@ class CreateRoomChooseFrame(Frame):
         Label(self, text="Choisissez un nom de salon :", font=("Helvetica", 18)).pack(side="top", pady=20)
 
         self.entry = Entry(self)
-        self.entry.pack(pady=(15, 0))
+        self.entry.pack(pady=15)
 
-        Checkbutton(self, text="Partie rapide", variable=self.master.shortRule).pack(pady=(5, 5))
-        Checkbutton(self, text="Pas de carte retournée durant la bataille", variable=self.master.noCardUpsideDown)\
-            .pack(pady=(5, 15))
+        Checkbutton(self, text="Partie rapide", variable=self.master.shortRule).pack()
+        Checkbutton(self, text="Sans cartes retournées en bataille", variable=self.master.noCardUpsideDown)\
+            .pack()
 
-        Button(self, text="Créer le salon", command=on_create_room).pack(pady=3)
+        Button(self, text="Créer le salon", command=on_create_room).pack(pady=(15, 3))
         Button(self, text="Retour au menu", command=lambda: master.raise_frame('start')).pack(pady=3)
 
     def init(self):
