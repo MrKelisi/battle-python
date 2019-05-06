@@ -128,6 +128,15 @@ class Battle:
 		self.on_game_par = default_callback  # winners_names
 
 	@abstractmethod
+	def number_of_cards_to_draw(self):
+		"""
+		Retourne le nombre de cartes restant à tirer.
+		:return: Le nombre de cartes restant à tirer.
+		:rtype: int
+		"""
+		pass
+
+	@abstractmethod
 	def draw_card(self):
 		"""
 		Tire une carte.
@@ -304,6 +313,9 @@ class ServerBattle(Battle):
 				self.on_game_won(winner)
 				self.__game_server.stop()
 
+	def number_of_cards_to_draw(self):
+		return self.__number_of_cards_to_play[self.__game_server.name]
+
 	def draw_card(self):
 		# Le tirage d'une carte n'est possible que si le joueur en question a encore une carte à tirer.
 		if self.__number_of_cards_to_play[self.__game_server.name] > 0:
@@ -366,7 +378,7 @@ class ServerBattle(Battle):
 					if player_name in max_players:
 						if self.__players_decks[player_name].number_of_cards() >= 2:
 							# Le joueur courant a suffisamment de cartes pour continuer.
-							self.__number_of_cards_to_play[player_name] += 2
+							self.__number_of_cards_to_play[player_name] = 1 if self.__game_server.no_card_upside_down else 2
 							if player_name == self.__game_server.name:  # Le joueur courant = le serveur.
 								in_battle = True
 							else:  # Le joueur courant = un autre joueur.
@@ -474,6 +486,8 @@ class ClientBattle(Battle):
 		# Valeurs en paramètre.
 		self.__game_client = battle_net_client
 
+		self.__number_of_cards_to_draw = 0
+
 		# Initialisation des points des joueurs dans le jeu : tous les joueurs aussi connectés + le client lui-même.
 		self.__players_points = {}
 		for player_name in self.__game_client.players_names:
@@ -512,9 +526,16 @@ class ClientBattle(Battle):
 			self.__cards_played[player_name] = []
 		self.__cards_played[None] = []
 
+		if not self.is_game_ended:
+			self.__number_of_cards_to_draw = 1
+
 		self.on_new_turn()
 
+	def number_of_cards_to_draw(self):
+		return self.__number_of_cards_to_draw
+
 	def draw_card(self):
+		self.__number_of_cards_to_draw -= 1
 		self.__game_client.game_turn_draw_card()  # Envoi de la demande de tirage de la carte au serveur.
 
 	def __my_card_drawn(self, card_desc):
@@ -540,6 +561,8 @@ class ClientBattle(Battle):
 		self.on_card_drawn(player_name, card)
 
 	def __battle_with(self, in_battle, other_members_names):
+		if in_battle:
+			self.__number_of_cards_to_draw = 1 if self.__game_client.no_card_upside_down else 2
 		self.on_battle(in_battle, other_members_names)
 
 	def __turn_finished(self, winner_name):

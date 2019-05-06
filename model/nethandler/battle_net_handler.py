@@ -26,8 +26,8 @@ class BattleNetHandler(IvyServer):
 		# players_list [[player_name], [...]].
 		self.bind_msg(self.ivy__players_list, "players_list: \\[(([^,.]+, )+)\\]\\.")
 
-		# game_begin.
-		self.bind_msg(self.ivy__game_begin, "game_begin\\.")
+		# game_begin [short_rule], [no_card_upside_down].
+		self.bind_msg(self.ivy__game_begin, "game_begin (true|false), (true|false)\\.")
 
 		# game_new_turn.
 		self.bind_msg(self.ivy__game_new_turn, "game_new_turn\\.")
@@ -87,7 +87,7 @@ class BattleNetHandler(IvyServer):
 		pass
 
 	@abstractmethod
-	def ivy__game_begin(self, agent):
+	def ivy__game_begin(self, agent, short_rule, no_card_upside_down):
 		pass
 
 	@abstractmethod

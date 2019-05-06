@@ -22,7 +22,8 @@ class BattleBot:
 		else:  # On est encore en jeu, on doit tirer une carte.
 			print("Mes points : " + str(self.battle.my_points()))
 			print("Points des autres : " + str(self.battle.others_points()))
-			self.battle.draw_card()
+			while self.battle.number_of_cards_to_draw() > 0:
+				self.battle.draw_card()
 
 	def __game_turn_battle(self, in_battle, other_members_names):
 		"""
@@ -34,8 +35,8 @@ class BattleBot:
 		"""
 		if in_battle:  # On est dans la bataille, on tire deux cartes (celle masquée et celle montrée).
 			print("Bataille : je suis dedans !")
-			self.battle.draw_card()
-			self.battle.draw_card()
+			while self.battle.number_of_cards_to_draw() > 0:
+				self.battle.draw_card()
 		else:  # On n'est pas dans la bataille, on attend la fin du tour.
 			print("Bataille : je ne suis pas dedans.")
 

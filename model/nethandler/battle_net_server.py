@@ -45,7 +45,7 @@ class BattleNetServer(BattleNetHandler):
 
 	def game_begin(self):
 		self.game_started = True
-		self.send_msg("game_begin.")
+		self.send_msg("game_begin " + ("true" if self.short_rule else "false") + ", " + ("true" if self.no_card_upside_down else "false") + ".")
 
 	def game_new_turn(self):
 		self.send_msg("game_new_turn.")
@@ -110,7 +110,7 @@ class BattleNetServer(BattleNetHandler):
 	def ivy__players_list(self, agent, players_names, _):
 		pass  # Rien à gérer dans le cas d'un serveur, c'est lui qui envoie la liste de joueurs !
 
-	def ivy__game_begin(self, agent):
+	def ivy__game_begin(self, agent, short_rule, no_card_upside_down):
 		pass  # Rien à gérer dans le cas d'un serveur, c'est lui qui décide quand le jeu commence !
 
 	def ivy__game_new_turn(self, agent):

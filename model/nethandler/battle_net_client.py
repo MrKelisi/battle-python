@@ -10,6 +10,8 @@ def default_callback(*args):
 class BattleNetClient(BattleNetHandler):
 	def __init__(self, name="client#" + str(round(time.time()*1000))):
 		self.players_names = []
+		self.short_rule = True
+		self.no_card_upside_down = False
 
 		self.on_new_room = default_callback  # gamehost_name, room_name, short_rule, no_card_upside_down
 		self.on_room_is_full = default_callback  # gamehost_name
@@ -85,8 +87,10 @@ class BattleNetClient(BattleNetHandler):
 					self.players_names.append(player_name)
 			self.on_players_list_updated(self.players_names)
 
-	def ivy__game_begin(self, agent):
+	def ivy__game_begin(self, agent, short_rule, no_card_upside_down):
 		if self.__connected_to_room == agent.agent_name:
+			self.short_rule = True if short_rule == "true" else False
+			self.no_card_upside_down = True if no_card_upside_down == "true" else False
 			self.on_game_begin()
 		else:
 			self.on_another_game_begin(agent.agent_name)

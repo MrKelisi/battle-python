@@ -14,7 +14,7 @@ def on_new_player(player_name):
 	print("Nouveau joueur : " + player_name)
 	if len(server.players) == PLAYERS_NUMBER-1:  # Le nombre de joueurs est suffisant pour lancer la partie.
 		# Création de l'objet de jeu et de la classe de gestion de la partie des robots.
-		serverBattle = BattleBot(ServerBattle(server, False))
+		serverBattle = BattleBot(ServerBattle(server))
 		# On tire une carte dans cette fonction car les callbacks n'ont été définis qu'après le lancement du premier tour.
 		serverBattle.battle.draw_card()
 
