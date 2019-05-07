@@ -132,11 +132,11 @@ class GameFrame(Frame):
                 self.in_battle = True
                 self.replace_top_card()
                 self.battle_stage[0] = 1
-                self._messages[0]['text'] = "BATTLE!"
+                self._messages[0]['text'] = "BATAILLE !"
             for i in range(1, self.nb_players):
                 if self.players[i] in other_members_names:
                     self.battle_stage[i] = 1
-                    self._messages[i]['text'] = "BATTLE!"
+                    self._messages[i]['text'] = "BATAILLE !"
 
         def on_turn_finished(winner_name):
             if winner_name:
@@ -153,7 +153,7 @@ class GameFrame(Frame):
             self.battle_stage = [0, 0, 0, 0]
             for label in self._messages:
                 label['text'] = ''
-            self._messages[index]['text'] = "WIN!"
+            self._messages[index]['text'] = "GAGNÉ !"
 
             self.hide_top_card()
 
@@ -165,7 +165,7 @@ class GameFrame(Frame):
             self.in_battle = False
 
             self.battle_stage = [0, 0, 0, 0]
-            self._messages[0]['text'] = "PAR"
+            self._messages[0]['text'] = "ÉGALITÉ"
 
             self.hide_top_card()
 
@@ -211,7 +211,7 @@ class GameFrame(Frame):
         self.nb_players = len(self.players)
 
         for i in range(self.nb_players):
-            self._players_names[i]['text'] = self.players[i] + (' (me)' if (i == 0) else '')
+            self._players_names[i]['text'] = self.players[i] + (' (moi)' if (i == 0) else '')
 
         self.new_turn()
         self.refresh_scores()

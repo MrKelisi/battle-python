@@ -14,7 +14,7 @@ class PlayerFrame(Frame):
         Label(self, text="Entrez votre nom :", font=("Helvetica", 18)).pack(side="top", pady=20)
 
         self.entry = Entry(self)
-        self.entry.insert(0, "Player#" + str(random.randint(1000, 9999)))
+        self.entry.insert(0, "Joueur#" + str(random.randint(1000, 9999)))
         self.entry.pack(pady=15)
 
         Button(self, text="Valider", command=on_validate).pack(pady=3)
