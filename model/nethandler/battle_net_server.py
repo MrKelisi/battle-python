@@ -83,7 +83,7 @@ class BattleNetServer(BattleNetHandler):
 	# Réception de messages. #
 
 	def ivy__find_rooms(self, agent):
-		if not self.game_started:
+		if not self.game_started and len(self.players) <3:
 			self.room()
 
 	def ivy__room(self, agent, room_name, short_rule, no_card_upside_down):
