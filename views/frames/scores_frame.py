@@ -10,7 +10,7 @@ class ScoresFrame(Frame):
         self.message.pack(side="top", pady=(60, 30))
 
         self.winner_name_label_var = StringVar(value="")
-        self.winner_name_label = Label(self, textvariable=self.winner_name_label_var, font=("Helvetica", 16))
+        self.winner_name_label = Label(self, textvariable=self.winner_name_label_var, font=("Helvetica", 16), wraplength=600)
         self.winner_name_label.pack(side="top", pady=(0, 30))
 
         Button(self, text="Quitter", command=master.stop).pack()
@@ -26,7 +26,7 @@ class ScoresFrame(Frame):
             if self.master.player_name in self.master.winners:
                 self.result.set("Égalité !")
                 self.message.config(fg='orange')
-            
+
             winners_label_content = "Les gagnants sont : "
             for winner_name in self.master.winners:
                 winners_label_content += winner_name + ", "
